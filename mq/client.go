@@ -14,8 +14,8 @@ type Client struct {
 	Topic      string
 	ProducerId string
 	ConsumerId string
-	Key        string
-	Tag        string
+	//Key        string
+	//Tag        string
 }
 
 type MessageResponse struct {
@@ -24,7 +24,7 @@ type MessageResponse struct {
 }
 
 func NewClient(ak string, sk string, endpoint string, topic string,
-	producerId string, consumerId string, key string, tag string) (client *Client) {
+	producerId string, consumerId string, tag string) (client *Client) {
 	client = &Client{
 		AccessKey:  ak,
 		SecretKey:  sk,
@@ -32,8 +32,8 @@ func NewClient(ak string, sk string, endpoint string, topic string,
 		Topic:      topic,
 		ProducerId: producerId,
 		ConsumerId: consumerId,
-		Key:        key,
-		Tag:        tag,
+		//Key:        key,
+		//Tag:        tag,
 	}
 	return client
 }
@@ -82,8 +82,8 @@ func getSendHeader(ak string, sign string, producerId string) (header map[string
 	return header, nil
 }
 
-func (client *Client) Send(time int64, message []byte) (msgId string, err error) {
-	url := getSendUrl(client.Endpoint, client.Topic, time, client.Tag, client.Key)
+func (client *Client) Send(time int64, key string, tag string, message []byte) (msgId string, err error) {
+	url := getSendUrl(client.Endpoint, client.Topic, time, tag, key)
 	sign := getSendSign(client.Topic, client.ProducerId, message, time, client.SecretKey)
 	header, err := getSendHeader(client.AccessKey, sign, client.ProducerId)
 	if err != nil {
@@ -116,10 +116,10 @@ func (client *Client) Send(time int64, message []byte) (msgId string, err error)
 	return result["msgId"].(string), nil
 }
 
-func (client *Client) ReceiveMessage(messageChan chan string, errChan chan error) {
+func (client *Client) ReceiveMessage(messageChan chan string, errChan chan error,tag string) {
 	// only listen for the latest message
 	time := GetCurrentUnixMicro()
-	url := getReceiveUrl(client.Endpoint, client.Topic, time, client.Tag, 1)
+	url := getReceiveUrl(client.Endpoint, client.Topic, time, tag, 1)
 	sign := getReceiveSign(client.Topic, client.ConsumerId, time, client.SecretKey)
 	header, err := getReceiveHeader(client.AccessKey, sign, client.ConsumerId)
 	if err != nil {
