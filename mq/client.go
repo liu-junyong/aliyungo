@@ -24,7 +24,7 @@ type MessageResponse struct {
 }
 
 func NewClient(ak string, sk string, endpoint string, topic string,
-	producerId string, consumerId string, tag string) (client *Client) {
+	producerId string, consumerId string) (client *Client) {
 	client = &Client{
 		AccessKey:  ak,
 		SecretKey:  sk,
